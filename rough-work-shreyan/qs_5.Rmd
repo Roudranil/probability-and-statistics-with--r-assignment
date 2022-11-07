@@ -1,0 +1,80 @@
+---
+title: "PBSR ASSIGNMENT 2"
+author: "SHREYAN CHAKRABORTY"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+library(tidyverse)
+library(quantmod)
+getSymbols('TCS.NS')
+tail(TCS.NS)
+
+```
+
+```{r pressure, echo=FALSE}
+plot(TCS.NS$TCS.NS.Adjusted)
+```
+```{r}
+getSymbols('^NSEI')
+tail(NSEI)
+```
+```{r}
+plot(NSEI$NSEI.Adjusted)
+```
+```{r}
+TCS_rt = diff(log(TCS.NS$TCS.NS.Adjusted))
+Nifty_rt = diff(log(NSEI$NSEI.Adjusted))
+retrn = cbind.xts(TCS_rt,Nifty_rt)
+retrn = na.omit(data.frame(retrn))
+plot(retrn$NSEI.Adjusted,retrn$TCS.NS.Adjusted
+,pch=20
+,xlab='Market Return'
+,ylab='TCS Return'
+,xlim=c(-0.18,0.18)
+,ylim=c(-0.18,0.18))
+grid(col='grey',lty=1)
+
+```
+```{r}
+#For method of moment estimation, the equations are as follows:
+#E(TCS)=alpha +beta*E(Nifty)
+#E(Nifty(TCS-alpha-beta*Nifty))=0
+#E(TCS-alpha-beta*Nifty)^2=sigma^2
+attach(retrn)
+tail(retrn)
+x<-array(0,4)
+x[1]=1
+x[2]<-mean(NSEI.Adjusted)
+x[3]<-mean(NSEI.Adjusted)
+x[4]<-mean((NSEI.Adjusted)*(NSEI.Adjusted))
+A<-matrix(x,nrow=2)
+
+#inserting another column containing TCS*NSE value named as "C"
+retrn<-retrn %>% mutate(C=TCS.NS.Adjusted*NSEI.Adjusted)
+
+y<-array(0,2)
+y[1]<-mean(TCS.NS.Adjusted)
+y[2]<-mean(C)
+B<-matrix(y,ncol=1)
+par_solution<-solve(A,B)
+
+#Now estimating through OLS using lm function
+model_ols<-lm(TCS.NS.Adjusted~NSEI.Adjusted,retrn)
+summary(model_ols)
+matrix_coeff<-summary(model_ols)$coefficients
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
