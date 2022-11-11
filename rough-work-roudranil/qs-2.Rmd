@@ -13,20 +13,17 @@ library(tidyverse)
 ```{r}
 mle <- function(log_alpha, data, sigma) {
     l = sum(log(dgamma(data, shape = exp(log_alpha), scale = sigma)))
-    print(paste("l is ", l))
+    # print(paste("l is ", l))
     return(-l)
 }
 
 MyMLE <- function(data, sigma) {
-    log_alpha_initial <- mean(data)^2/var(data)
-    print(paste("log alpha initial is ", log_alpha_initial))
+    log_alpha_initial <- log(mean(data)^2/var(data))
+    # print(paste("log alpha initial is ", log_alpha_initial))
     estimator <- optim(log_alpha_initial,
                  mle,
                  data = data,
-                 sigma = sigma,
-                 method = "L-BFGS-B",
-                 lower = 0.0001,
-                 upper = Inf)
+                 sigma = sigma)
     log_alpha_hat <- estimator$par
     return(log_alpha_hat)
 }
@@ -42,14 +39,13 @@ get_estimates <- function(n, alpha, sigma) {
     estimates <- c()
     for (i in 1:1000) {
         samples <- rgamma(n, shape = alpha, scale = sigma)
-        print(paste("some of the samples are ", samples[1:5]))
+        # print(paste("some of the samples are ", samples[1:5]))
         estimates <- append(estimates, MyMLE(data = samples, sigma = sigma))
     }
     return(estimates)
 }
 
-estimated_mle <- get_estimates(n = n, alpha = alpha, sigma = sigma)
-estimated_mle <- tibble(estimated_mle)
+estimated_mle <- tibble(get_estimates(n = n, alpha = alpha, sigma = sigma))
 colnames(estimated_mle) <- c("estimate")
 estimated_mle %>% 
     ggplot(aes(estimate)) +
