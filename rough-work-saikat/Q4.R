@@ -120,3 +120,33 @@ BIC=2*NegLogLike(theta_hat,Insurance)+log(nrow(Insurance))*2
 
 
 
+NegLogLikeD = function(theta,data){
+  sigma = theta[3]
+  n = nrow(data)
+  l=0
+  for(i in 1:n){
+    mu = log(theta[1]+theta[2]*log(data$Holders[i]))
+    l = l + log(dgamma(data$Claims[i],shape = mu,scale = sigma))
+    print(l)
+  }
+  return(-l)
+}
+
+
+theta_initial=c(1,0.1,10)
+NegLogLikeD(theta_initial,Insurance)
+
+fit = optim(theta_initial
+            ,NegLogLikeD
+            ,data=Insurance)
+ggplot(data=Insurance)+
+  geom_line(aes(Holders, fit$par[1]+fit$par[2]*Holders))+
+  geom_point(aes(Holders,Claims))
+theta_hat = fit$par
+theta_hat
+
+
+
+BIC=2*NegLogLikeD(theta_hat,Insurance)+log(nrow(Insurance))*2
+
+
