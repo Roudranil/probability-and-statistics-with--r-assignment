@@ -29,12 +29,8 @@ MyMLE <- function(data, sigma) {
 }
 ```
 
-2. 
-```{r}
-n = 10
-alpha = 1.5
-sigma = 2.2
 
+```{r}
 get_estimates <- function(n, alpha, sigma) {
     estimates <- c()
     for (i in 1:1000) {
@@ -44,15 +40,104 @@ get_estimates <- function(n, alpha, sigma) {
     }
     return(estimates)
 }
+```
+
+2. 
+```{r}
+n = 20
+alpha = 1.5
+sigma = 2.2
 
 estimated_mle <- tibble(get_estimates(n = n, alpha = alpha, sigma = sigma))
 colnames(estimated_mle) <- c("estimate")
+
+perc_2.5 <- quantile(estimated_mle$estimate, probs = 0.025, names = FALSE)
+perc_97.5 <- quantile(estimated_mle$estimate, probs = 0.975, names = FALSE)
+
 estimated_mle %>% 
     ggplot(aes(estimate)) +
     geom_histogram(color = "white", fill = "#5D5D5D") +
     geom_vline(xintercept = log(alpha), 
                size = 2,
-               linetype = "dashed")
+               linetype = "dashed") +
+    annotate("text", label = "Actual log(alpha)", x = 0.5, y = 95, color = "black") +
+    geom_vline(xintercept = perc_2.5, 
+               color = "#00B9FF", size = 1.5, linetype = "dashed") +
+    annotate("text", label = "2.5 percentile", x = perc_2.5 + 0.1, y = 95, color = "#00B9FF") +
+    geom_vline(xintercept = perc_97.5, 
+               color = "#E08304", size = 1.5, linetype = "dashed") +
+    annotate("text", label = "97.5 percentile", x = perc_97.5 + 0.1, y = 95, color = "#E08304") +
+    labs(title = paste("n = ", n, ", alpha = ", alpha, ", sigma = ", sigma),
+         x = "Estimated MLE",
+         y = "Count")
+
+perc_97.5 - perc_2.5
 ```
+
+3.
+```{r}
+n = 40
+alpha = 1.5
+sigma = 2.2
+
+estimated_mle <- tibble(get_estimates(n = n, alpha = alpha, sigma = sigma))
+colnames(estimated_mle) <- c("estimate")
+
+perc_2.5 <- quantile(estimated_mle$estimate, probs = 0.025, names = FALSE)
+perc_97.5 <- quantile(estimated_mle$estimate, probs = 0.975, names = FALSE)
+
+estimated_mle %>% 
+    ggplot(aes(estimate)) +
+    geom_histogram(color = "white", fill = "#5D5D5D") +
+    geom_vline(xintercept = log(alpha), 
+               size = 2,
+               linetype = "dashed") +
+    annotate("text", label = "Actual log(alpha)", x = log(alpha) + 0.1, y = 95, color = "black") +
+    geom_vline(xintercept = perc_2.5, 
+               color = "#00B9FF", size = 1.5, linetype = "dashed") +
+    annotate("text", label = "2.5 percentile", x = perc_2.5 + 0.1, y = 95, color = "#00B9FF") +
+    geom_vline(xintercept = perc_97.5, 
+               color = "#E08304", size = 1.5, linetype = "dashed") +
+    annotate("text", label = "97.5 percentile", x = perc_97.5 + 0.1, y = 95, color = "#E08304") +
+    labs(title = paste("n = ", n, ", alpha = ", alpha, ", sigma = ", sigma),
+         x = "Estimated MLE",
+         y = "Count")
+
+perc_97.5 - perc_2.5
+```
+
+4. 
+```{r}
+n = 100
+alpha = 1.5
+sigma = 2.2
+
+estimated_mle <- tibble(get_estimates(n = n, alpha = alpha, sigma = sigma))
+colnames(estimated_mle) <- c("estimate")
+
+perc_2.5 <- quantile(estimated_mle$estimate, probs = 0.025, names = FALSE)
+perc_97.5 <- quantile(estimated_mle$estimate, probs = 0.975, names = FALSE)
+
+estimated_mle %>% 
+    ggplot(aes(estimate)) +
+    geom_histogram(color = "white", fill = "#5D5D5D") +
+    geom_vline(xintercept = log(alpha), 
+               size = 2,
+               linetype = "dashed") +
+    annotate("text", label = "Actual log(alpha)", x = log(alpha) + 0.05, y = 95, color = "black") +
+    geom_vline(xintercept = perc_2.5, 
+               color = "#00B9FF", size = 1.5, linetype = "dashed") +
+    annotate("text", label = "2.5 percentile", x = perc_2.5 + 0.05, y = 95, color = "#00B9FF") +
+    geom_vline(xintercept = perc_97.5, 
+               color = "#E08304", size = 1.5, linetype = "dashed") +
+    annotate("text", label = "97.5 percentile", x = perc_97.5 + 0.05, y = 95, color = "#E08304") +
+    labs(title = paste("n = ", n, ", alpha = ", alpha, ", sigma = ", sigma),
+         x = "Estimated MLE",
+         y = "Count")
+
+perc_97.5 - perc_2.5
+```
+
+We can see that the gap between the percentile points is decreasing as the sample size increases.
 
 
