@@ -9,16 +9,17 @@ output: html_document
 library(tidyverse)
 ```
 
-
 1. 
 ```{r}
 mle <- function(log_alpha, data, sigma) {
     l = sum(log(dgamma(data, shape = exp(log_alpha), scale = sigma)))
+    print(paste("l is ", l))
     return(-l)
 }
 
 MyMLE <- function(data, sigma) {
     log_alpha_initial <- mean(data)^2/var(data)
+    print(paste("log alpha initial is ", log_alpha_initial))
     estimator <- optim(log_alpha_initial,
                  mle,
                  data = data,
@@ -33,7 +34,7 @@ MyMLE <- function(data, sigma) {
 
 2. 
 ```{r}
-n = 20
+n = 10
 alpha = 1.5
 sigma = 2.2
 
@@ -41,6 +42,7 @@ get_estimates <- function(n, alpha, sigma) {
     estimates <- c()
     for (i in 1:1000) {
         samples <- rgamma(n, shape = alpha, scale = sigma)
+        print(paste("some of the samples are ", samples[1:5]))
         estimates <- append(estimates, MyMLE(data = samples, sigma = sigma))
     }
     return(estimates)
