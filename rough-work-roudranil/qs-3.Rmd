@@ -1,7 +1,8 @@
 ---
-title: "QS 3 rough"
-author: "Roudranil"
-output: html_dcument
+title: "Question 3"
+author: "Roudranil Das"
+date: "`r Sys.Date()`"
+output: html_document
 ---
 
 ```{r}
@@ -214,7 +215,7 @@ results
 
 Based on the AIC value of all the models, we choose the third model as it has the lowest AIC value.
 
-The required probability $\mathbb{P}[60<\texttt{ waiting }<70]$ is:
+The required probability $\mathbb{P}[60<\texttt{waiting}<70]$ is:
 ```{r}
 p <- theta_3[1]
 mu_1 <- theta_3[2]
@@ -222,10 +223,10 @@ sigma_1 <- theta_3[3]
 mu_2 <- theta_3[4]
 sigma_2 <- theta_3[5]
 
-p*plnorm(70, meanlog = mu_1, sdlog = sigma_1) + (1-p)*plnorm(70, meanlog = mu_2, sdlog = sigma_2) - p*plnorm(60, meanlog = mu_1, sdlog = sigma_1) + (1-p)*plnorm(60, meanlog = mu_2, sdlog = sigma_2)
+reqd_prob <- (p*plnorm(70, meanlog = mu_1, sdlog = sigma_1) + (1-p)*plnorm(70, meanlog = mu_2, sdlog = sigma_2)) - (p*plnorm(60, meanlog = mu_1, sdlog = sigma_1) + (1-p)*plnorm(60, meanlog = mu_2, sdlog = sigma_2))
 ```
 
-Hence $\mathbb{P}[60<\texttt{ waiting }<70] = 0.09083327$
+Hence $\mathbb{P}[60<\texttt{waiting}<70]$ =  `r reqd_prob`
 
 
 
