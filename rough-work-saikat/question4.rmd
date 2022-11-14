@@ -47,19 +47,19 @@ $$
 
 (i) Clearly write down the negative-log-likelihood function in `R`. Then use `optim` function to estimate MLE of $\theta=(\beta_0,\beta_1,\sigma)$  
 
-```{r}
+```{r results = FALSE}
 library(tidyverse)
 ```
 
 
-```{r}
+```{r results = FALSE, warning=FALSE}
 NegLogLikeA = function(theta,data){
-  sigma = exp(theta[3])
+  sigma = theta[3]
   n = nrow(data)
   l=0
   for(i in 1:n){
     mu = theta[1]+theta[2]*data$Holders[i]
-    l = l + log(dnorm(data$Claims[i],mean = mu,sd=sigma))
+    l = l + dnorm(data$Claims[i],mean = mu,sd=sigma)
   }
   return(-l)
 }
@@ -71,7 +71,10 @@ NegLogLikeA(theta_initial,Insurance)
 fit = optim(theta_initial,
             NegLogLikeA,
             data = Insurance)
+```
 
+
+```{r}
 ggplot(data=Insurance)+
   geom_line(aes(Holders, fit$par[1]+fit$par[2]*Holders))+
   geom_point(aes(Holders,Claims))
@@ -82,8 +85,12 @@ theta_hat
 
 (ii) Calculate **Bayesian Information Criterion** (BIC) for the model.   
 
-```{r}
+```{r results = FALSE, warning=FALSE}
 BIC = 2*NegLogLikeA(theta_hat,Insurance) + log(nrow(Insurance))*2
+```
+
+
+```{r}
 BIC
 ```
 
@@ -96,19 +103,19 @@ $$
 
 (i) Clearly write down the negative-log-likelihood function in `R`. Then use `optim` function to estimate MLE of $\theta=(\beta_0,\beta_1,\sigma)$
 
-```{r}
+```{r results = FALSE, warning=FALSE}
 dlaplace = function(x, mu, sigma){
   exp(-abs(x-mu)/sigma) / (2*sigma)
 }
 
 
 NegLogLikeB = function(theta, data){
-  sigma = exp(theta[3])
+  sigma = theta[3]
   n = nrow(data)
   l=0
   for(i in 1:n){
     mu = theta[1]+theta[2]*data$Holders[i]
-    l = l + log(dlaplace(data$Claims[i], 0, sigma))
+    l = l + dlaplace(data$Claims[i], 0, sigma)
     print(l)
   }
   return(-l)
@@ -121,7 +128,10 @@ NegLogLikeB(theta_initial, Insurance)
 fit = optim(theta_initial,
             NegLogLikeB,
             data = Insurance)
+```
 
+
+```{r}
 ggplot(data=Insurance)+
   geom_line(aes(Holders, fit$par[1]+fit$par[2]*Holders))+
   geom_point(aes(Holders,Claims))
@@ -133,8 +143,12 @@ theta_hat
 
 (ii) Calculate **Bayesian Information Criterion** (BIC) for the model.   
 
-```{r}
+```{r results = FALSE, warning=FALSE}
 BIC = 2*NegLogLikeB(theta_hat,Insurance) + log(nrow(Insurance))*2
+```
+
+
+```{r}
 BIC
 ```
 
@@ -151,21 +165,21 @@ Note that $\beta_0,\beta_1 \in\mathbb{R}$ and $\sigma \in \mathbb{R}^{+}$.
 
 (i) Clearly write down the negative-log-likelihood function in `R`. Then use `optim` function to estimate MLE of $\theta=(\alpha,\beta,\sigma)$    
 
-```{r}
+```{r results = FALSE, warning=FALSE}
 NegLogLikeC = function(theta,data){
   sigma = theta[3]
   n = nrow(data)
   l=0
   for(i in 1:n){
     mu = theta[1]+theta[2]*log(data$Holders[i])
-    l = l + log(dlnorm(data$Claims[i],meanlog = mu, sdlog = log(sigma)))
+    l = l + dlnorm(data$Claims[i],meanlog = mu, sdlog = sigma)
     print(l)
   }
   return(-l)
 }
 
 
-theta_initial=c(0.001,0.1,log(10))
+theta_initial=c(1, 0, 1)
 NegLogLikeC(theta_initial, Insurance)
 
 fit = optim(theta_initial,
@@ -174,6 +188,10 @@ fit = optim(theta_initial,
             lower = c(-Inf, -Inf, 0),
             upper = c(Inf, Inf, Inf),
             method = "L-BFGS-B")
+```
+
+
+```{r}
 ggplot(data=Insurance)+
   geom_line(aes(Holders, fit$par[1]+fit$par[2]*Holders))+
   geom_point(aes(Holders,Claims))
@@ -184,8 +202,12 @@ theta_hat
 
 (ii) Calculate **Bayesian Information Criterion** (BIC) for the model.    
 
+```{r results = FALSE, warning=FALSE}
+BIC=2*NegLogLikeC(theta_hat,Insurance)+log(nrow(Insurance))*2
+```
+
+
 ```{r}
-BIC=2*NegLogLike(theta_hat,Insurance)+log(nrow(Insurance))*2
 BIC
 ```
 
@@ -198,37 +220,48 @@ $$
 log(\alpha_i)=\beta_0 + \beta_1 \log(\texttt{Holders}_i), ~~i=1,2,...,n
 $$
 
-```{r}
+```{r results = FALSE, warning=FALSE}
 NegLogLikeD = function(theta,data){
-  sigma = theta[3]
+  scale = theta[3]
   n = nrow(data)
   l=0
   for(i in 1:n){
-    mu = exp(theta[1]+theta[2]*log(data$Holders[i]))
-    l = l + log(dgamma(data$Claims[i], shape = mu, scale = sigma))
+    shape = theta[1]+theta[2]*data$Holders[i]
+    l = l + dgamma(data$Claims[i], shape = shape, scale = scale)
     print(l)
   }
   return(-l)
 }
 
 
-theta_initial=c(8,1,10)
+theta_initial=c(1, 0, 1)
 NegLogLikeD(theta_initial,Insurance)
 
-fit = optim(NegLogLikeD,
-            theta_initial,
+fit = optim(theta_initial,
+            NegLogLikeD,
             data=Insurance)
+```
+
+
+```{r}
 ggplot(data=Insurance)+
   geom_line(aes(Holders, fit$par[1]+fit$par[2]*Holders))+
   geom_point(aes(Holders,Claims))
 theta_hat = fit$par
 theta_hat
+```
 
-
-
+```{r results = FALSE, warning=FALSE}
 BIC=2*NegLogLikeD(theta_hat,Insurance)+log(nrow(Insurance))*2
+```
+
+
+```{r}
 BIC
 ```
 
 
 (iii) Compare the BIC of all three models
+
+Comparing BIC of all the models, we see that BIC of model 1 is least.    
+So, we conclude that model 1 is the best fit.
