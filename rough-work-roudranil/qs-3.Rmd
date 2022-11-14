@@ -7,7 +7,7 @@ output: html_dcument
 ```{r}
 library(tidyverse)
 library(scales)
-library(AICcmodavg)
+# library(AICcmodavg)
 ```
 
 # Q3
@@ -18,7 +18,7 @@ data_q3 <- faithful %>%
 
 x <- sort(data_q3$waiting)
 
-hist(x, xlab = 'waiting', probability = T, col='pink', main='')
+# hist(x, xlab = 'waiting', probability = T, col='pink', main='')
 
 ```
 
@@ -63,16 +63,18 @@ fit = optim(theta_inital,
       upper = c(1, Inf, Inf, Inf, Inf),
       method="L-BFGS-B")
 
-theta = fit$par
-print(theta)
+theta_1 = fit$par
+theta_1
 
-p = theta[1]
-a = theta[2]
-s = theta[3]
-mu = theta[4]
-sigma = theta[5]
+p = theta_1[1]
+a = theta_1[2]
+s = theta_1[3]
+mu = theta_1[4]
+sigma = theta_1[5]
 
 model_1 = p*dgamma(x, shape = a, scale = s) + (1-p)*dnorm(x, mean = mu, sd = sigma)
+
+aic_1 <- 2*5 + neg_log_likelihood(theta_1, x)
 
 # hist(x, xlab = 'waiting', probability = T, col='pink', main='')
 # lines(x, model_1)
@@ -119,19 +121,21 @@ fit = optim(theta_inital,
       upper = c(1, Inf, Inf, Inf, Inf),
       method="L-BFGS-B")
 
-theta <- fit$par
-theta
+theta_2 <- fit$par
+theta_2
 
-p <- theta[1]
-a_1 <- theta[2]
-s_1 <- theta[3]
-a_2 <- theta[4]
-s_2 <- theta[5]
+p <- theta_2[1]
+a_1 <- theta_2[2]
+s_1 <- theta_2[3]
+a_2 <- theta_2[4]
+s_2 <- theta_2[5]
 
 model_2 <- p*dgamma(x, shape = a_1, scale = s_1) + (1-p)*dgamma(x, shape = a_2, scale = s_2)
 
-hist(x, xlab = 'waiting', probability = T, col='pink', main='')
-lines(x, model_2)
+aic_2 <- 2*5 + neg_log_likelihood(theta_2, x)
+
+# hist(x, xlab = 'waiting', probability = T, col='pink', main='')
+# lines(x, model_2)
 ```
 
 ```{r}
@@ -176,32 +180,53 @@ fit = optim(theta_inital,
       upper = c(1, Inf, Inf, Inf, Inf),
       method="L-BFGS-B")
 
-theta <- fit$par
-theta
+theta_3 <- fit$par
+theta_3
 
-p <- theta[1]
-mu_1 <- theta[2]
-sigma_1 <- theta[3]
-mu_2 <- theta[4]
-sigma_2 <- theta[5]
+p <- theta_3[1]
+mu_1 <- theta_3[2]
+sigma_1 <- theta_3[3]
+mu_2 <- theta_3[4]
+sigma_2 <- theta_3[5]
 
 model_3 <- p*dlnorm(x, meanlog = mu_1, sdlog = sigma_1) + (1-p)*dlnorm(x, meanlog = mu_2, sdlog = sigma_2)
 
-hist(x, xlab = 'waiting', probability = T, col='pink', main='')
-lines(x, model_3)
+aic_3 <- 2*5 + neg_log_likelihood(theta_3, x)
+
+# hist(x, xlab = 'waiting', probability = T, col='pink', main='')
+# lines(x, model_3)
 ```
 
 ```{r}
-density(x)$y
-
-
-all_density <- tibble(data.frame(x, model_1, model_2, model_3))
-
-all_density %>% 
-    pivot_longer(model_1:model_3, names_to = "model_name", values_to = "density_val") %>% 
-    ggplot(aes(x = x, color = model_name)) +
-    geom_line(aes(y = density_val))
+hist(x, xlab = 'waiting', probability = T, col='pink', main='')
+lines(x, model_1, col = "red")
+lines(x, model_2, col = "blue")
+lines(x, model_3, col = "green")
 ```
+
+```{r}
+results <- data.frame(
+    models = c("Gamma + Normal", "Gamma + Gamma", "Lognormal + Lognormal"),
+    AIC = c(aic_1, aic_2, aic_3)
+)
+results
+```
+
+Based on the AIC value of all the models, we choose the third model as it has the lowest AIC value.
+
+The required probability $\mathbb{P}[60<\texttt{ waiting }<70]$ is:
+```{r}
+p <- theta_3[1]
+mu_1 <- theta_3[2]
+sigma_1 <- theta_3[3]
+mu_2 <- theta_3[4]
+sigma_2 <- theta_3[5]
+
+p*plnorm(70, meanlog = mu_1, sdlog = sigma_1) + (1-p)*plnorm(70, meanlog = mu_2, sdlog = sigma_2) - p*plnorm(60, meanlog = mu_1, sdlog = sigma_1) + (1-p)*plnorm(60, meanlog = mu_2, sdlog = sigma_2)
+```
+
+Hence $\mathbb{P}[60<\texttt{ waiting }<70] = 0.09083327$
+
 
 
 
