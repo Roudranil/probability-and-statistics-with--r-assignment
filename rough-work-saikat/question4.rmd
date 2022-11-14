@@ -1,0 +1,234 @@
+---
+title: "Question 4"
+author: "Saikat Bera"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## Problem 4: Modelling Insurance Claims
+
+Consider the `Insurance` datasets in the `MASS` package. The data given in data frame `Insurance` consist of the numbers of policyholders of an insurance company who were exposed to risk, and the numbers of car insurance claims made by those policyholders in the third quarter of 1973.
+
+This data frame contains the following columns:
+
+`District` (factor): district of residence of policyholder (1 to 4): 4 is major cities.
+
+`Group` (an ordered factor): group of car with levels <1 litre, 1–1.5 litre, 1.5–2 litre, >2 litre.
+
+`Age` (an ordered factor): the age of the insured in 4 groups labelled <25, 25–29, 30–35, >35.
+
+`Holders` : numbers of policyholders.
+
+`Claims` : numbers of claims
+
+```{r}
+library(MASS)
+plot(Insurance$Holders,Insurance$Claims
+     ,xlab = 'Holders',ylab='Claims',pch=20)
+grid()
+```
+
+**Note**: If you use built-in function like `lm` or any packages then no points will be awarded.
+
+**Part A**: We want to predict the `Claims` as function of `Holders`. So we want to fit the following models:
+$$
+\texttt{Claims}_i=\beta_0 + \beta_1~\texttt{Holders}_i + \varepsilon_i,~~~i=1,2,\cdots,n
+$$
+*Assume* : $\varepsilon_i\sim N(0,\sigma^2)$. Note that $\beta_0,\beta_1 \in\mathbb{R}$ and $\sigma \in \mathbb{R}^{+}$.
+
+The above model can alse be re-expressed as,
+$$
+\texttt{Claims}_i\sim N(\mu_i,\sigma^2),~~where
+$$
+$$
+\mu_i =\beta_0 + \beta_1~\texttt{Holders}_i + \varepsilon_i,~~~i=1,2,\cdots,n
+$$
+
+
+(i) Clearly write down the negative-log-likelihood function in `R`. Then use `optim` function to estimate MLE of $\theta=(\beta_0,\beta_1,\sigma)$  
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+NegLogLikeA = function(theta,data){
+  sigma = exp(theta[3])
+  n = nrow(data)
+  l=0
+  for(i in 1:n){
+    mu = theta[1]+theta[2]*data$Holders[i]
+    l = l + log(dnorm(data$Claims[i],mean = mu,sd=sigma))
+  }
+  return(-l)
+}
+
+
+theta_initial = c(0.01,0.1,log(10))
+NegLogLikeA(theta_initial,Insurance)
+
+fit = optim(theta_initial,
+            NegLogLikeA,
+            data = Insurance)
+
+ggplot(data=Insurance)+
+  geom_line(aes(Holders, fit$par[1]+fit$par[2]*Holders))+
+  geom_point(aes(Holders,Claims))
+theta_hat = fit$par
+theta_hat
+```
+
+
+(ii) Calculate **Bayesian Information Criterion** (BIC) for the model.   
+
+```{r}
+BIC = 2*NegLogLikeA(theta_hat,Insurance) + log(nrow(Insurance))*2
+BIC
+```
+
+
+**Part B**: Now we want to fit the same model with change in distribution:
+$$
+\texttt{Claims}_i=\beta_0 + \beta_1~\texttt{Holders}_i + \varepsilon_i,~~~i=1,2,\cdots,n
+$$
+  Assume : $\varepsilon_i\sim Laplace(0,\sigma^2)$. Note that $\beta_0,\beta_1 \in\mathbb{R}$ and $\sigma \in \mathbb{R}^{+}$.
+
+(i) Clearly write down the negative-log-likelihood function in `R`. Then use `optim` function to estimate MLE of $\theta=(\beta_0,\beta_1,\sigma)$
+
+```{r}
+dlaplace = function(x, mu, sigma){
+  exp(-abs(x-mu)/sigma) / (2*sigma)
+}
+
+
+NegLogLikeB = function(theta, data){
+  sigma = exp(theta[3])
+  n = nrow(data)
+  l=0
+  for(i in 1:n){
+    mu = theta[1]+theta[2]*data$Holders[i]
+    l = l + log(dlaplace(data$Claims[i], 0, sigma))
+    print(l)
+  }
+  return(-l)
+}
+
+
+theta_initial=c(0.01,0.1,10)
+NegLogLikeB(theta_initial, Insurance)
+
+fit = optim(theta_initial,
+            NegLogLikeB,
+            data = Insurance)
+
+ggplot(data=Insurance)+
+  geom_line(aes(Holders, fit$par[1]+fit$par[2]*Holders))+
+  geom_point(aes(Holders,Claims))
+theta_hat = fit$par
+theta_hat
+
+```
+
+
+(ii) Calculate **Bayesian Information Criterion** (BIC) for the model.   
+
+```{r}
+BIC = 2*NegLogLikeB(theta_hat,Insurance) + log(nrow(Insurance))*2
+BIC
+```
+
+
+**Part C**: We want to fit the following models:
+$$
+\texttt{Claims}_i\sim LogNormal(\mu_i,\sigma^2), where
+$$
+$$
+\mu_i=\beta_0 + \beta_1 \log(\texttt{Holders}_i), ~~i=1,2,...,n
+$$
+
+Note that $\beta_0,\beta_1 \in\mathbb{R}$ and $\sigma \in \mathbb{R}^{+}$.
+
+(i) Clearly write down the negative-log-likelihood function in `R`. Then use `optim` function to estimate MLE of $\theta=(\alpha,\beta,\sigma)$    
+
+```{r}
+NegLogLikeC = function(theta,data){
+  sigma = theta[3]
+  n = nrow(data)
+  l=0
+  for(i in 1:n){
+    mu = theta[1]+theta[2]*log(data$Holders[i])
+    l = l + log(dlnorm(data$Claims[i],meanlog = mu, sdlog = log(sigma)))
+    print(l)
+  }
+  return(-l)
+}
+
+
+theta_initial=c(0.001,0.1,log(10))
+NegLogLikeC(theta_initial, Insurance)
+
+fit = optim(theta_initial,
+            NegLogLikeC,
+            data=Insurance,
+            lower = c(-Inf, -Inf, 0),
+            upper = c(Inf, Inf, Inf),
+            method = "L-BFGS-B")
+ggplot(data=Insurance)+
+  geom_line(aes(Holders, fit$par[1]+fit$par[2]*Holders))+
+  geom_point(aes(Holders,Claims))
+theta_hat = fit$par
+theta_hat
+```
+
+
+(ii) Calculate **Bayesian Information Criterion** (BIC) for the model.    
+
+```{r}
+BIC=2*NegLogLike(theta_hat,Insurance)+log(nrow(Insurance))*2
+BIC
+```
+
+
+**Part D**: We want to fit the following models:
+$$
+\texttt{Claims}_i\sim Gamma(\alpha_i,\sigma), where
+$$
+$$
+log(\alpha_i)=\beta_0 + \beta_1 \log(\texttt{Holders}_i), ~~i=1,2,...,n
+$$
+
+```{r}
+NegLogLikeD = function(theta,data){
+  sigma = theta[3]
+  n = nrow(data)
+  l=0
+  for(i in 1:n){
+    mu = exp(theta[1]+theta[2]*log(data$Holders[i]))
+    l = l + log(dgamma(data$Claims[i], shape = mu, scale = sigma))
+    print(l)
+  }
+  return(-l)
+}
+
+
+theta_initial=c(8,1,10)
+NegLogLikeD(theta_initial,Insurance)
+
+fit = optim(NegLogLikeD,
+            theta_initial,
+            data=Insurance)
+ggplot(data=Insurance)+
+  geom_line(aes(Holders, fit$par[1]+fit$par[2]*Holders))+
+  geom_point(aes(Holders,Claims))
+theta_hat = fit$par
+theta_hat
+
+
+
+BIC=2*NegLogLikeD(theta_hat,Insurance)+log(nrow(Insurance))*2
+BIC
+```
+
+
+(iii) Compare the BIC of all three models

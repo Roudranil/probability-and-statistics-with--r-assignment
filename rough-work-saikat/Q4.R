@@ -104,7 +104,7 @@ theta_initial=c(0.01,0.1,log(10))
 NegLogLikeC(theta_initial,Insurance)
 
 fit = optim(theta_initial
-            ,NegLogLike
+            ,NegLogLikeC
             ,data=Insurance)
 ggplot(data=Insurance)+
   geom_line(aes(Holders, fit$par[1]+fit$par[2]*Holders))+
