@@ -73,7 +73,7 @@ A <- matrix(x,nrow=2)
 #inserting another column containing TCS*NSE value named as "C"
 retrn <- retrn %>% 
     mutate(C=TCS.NS.Adjusted*NSEI.Adjusted)
-
+attach(retrn)
 #storing values in 2X1 matrix for solving of system of equations:
 y <- array(0,2)
 y[1] <- mean(TCS.NS.Adjusted)
