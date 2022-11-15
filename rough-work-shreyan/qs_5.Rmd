@@ -1,0 +1,131 @@
+---
+title: "PBSR ASSIGNMENT 2"
+author: "SHREYAN CHAKRABORTY"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+library(tidyverse)
+library(quantmod)
+getSymbols('TCS.NS')
+tail(TCS.NS)
+
+```
+
+```{r}
+plot(TCS.NS$TCS.NS.Adjusted)
+```
+```{r}
+getSymbols('^NSEI')
+tail(NSEI)
+```
+```{r}
+plot(NSEI$NSEI.Adjusted)
+```
+```{r}
+TCS_rt = diff(log(TCS.NS$TCS.NS.Adjusted))
+Nifty_rt = diff(log(NSEI$NSEI.Adjusted))
+retrn = cbind.xts(TCS_rt,Nifty_rt)
+retrn = na.omit(data.frame(retrn))
+plot(retrn$NSEI.Adjusted,retrn$TCS.NS.Adjusted
+     ,pch=20
+     ,xlab='Market Return'
+     ,ylab='TCS Return'
+     ,xlim=c(-0.18,0.18)
+     ,ylim=c(-0.18,0.18))
+grid(col='grey',lty=1)
+
+```
+
+where $\mathbb{E}(\varepsilon)=0$ and $\mathbb{V}ar(\varepsilon)=\sigma^2$.
+
+1. Estimate the parameters of the models $\theta=(\alpha,\beta,\sigma)$ using the method of moments type plug-in estimator discussed in the class.
+
+2. Estimate the parameters using the `lm` built-in function of `R`. Note that `lm` using the OLS method.
+
+
+
+```{r}
+#For method of moment estimation, the equations are as follows:
+#E(TCS)=alpha +beta*E(Nifty)
+#E(Nifty(TCS-alpha-beta*Nifty))=0
+#E(TCS-alpha-beta*Nifty)^2=sigma^2
+attach(retrn)
+tail(retrn)
+
+#creating a 2X2 coefficient matrix for solving of system of equations:
+x<-array(0,4)
+x[1] = 1
+x[2] <- mean(NSEI.Adjusted)
+x[3] <- mean(NSEI.Adjusted)
+x[4] <- mean((NSEI.Adjusted)*(NSEI.Adjusted))
+A <- matrix(x,nrow=2)
+
+#inserting another column containing TCS*NSE value named as "C"
+retrn <- retrn %>% 
+    mutate(C=TCS.NS.Adjusted*NSEI.Adjusted)
+attach(retrn)
+#storing values in 2X1 matrix for solving of system of equations:
+y <- array(0,2)
+y[1] <- mean(TCS.NS.Adjusted)
+y[2] <- mean(C)
+B <- matrix(y,ncol=1)
+par_solution <- solve(A,B)
+
+#Now estimating through OLS using lm function
+model_ols <- lm(TCS.NS.Adjusted~NSEI.Adjusted,retrn)
+summary(model_ols)
+matrix_coeff <- summary(model_ols)$coefficients
+plot(model_ols)
+x<-var(model_ols$residuals)**0.5
+
+#estimating sigma^2
+sigma_2 <- mean((TCS.NS.Adjusted-par_solution[1,1]-par_solution[2,1]*NSEI.Adjusted)*(TCS.NS.Adjusted-par_solution[1,1]-par_solution[2,1]*NSEI.Adjusted))
+
+#unbiased estimator of sigma_2
+usigma_2 <- sigma_2*(length(TCS.NS.Adjusted)/(length(TCS.NS.Adjusted)-1))
+usigma<-usigma_2**0.5
+
+Parameter_List<-data.frame(Parameters=c('alpha','beta','sigma'),
+                           MoM=c(par_solution[1,1],par_solution[2,1],usigma_2**0.5),
+                           OLS=c(model_ols$coefficients[1],model_ols$coefficients[2],var(model_ols$residuals)**0.5))
+
+```
+```{r}
+#The data frame consisting of all the estimated parameters
+Parameter_List
+```
+
+3. Fill-up the following table
+
+Parameters | Method of Moments         | OLS
+-----------|---------------------------|-------------------------------
+$\alpha$   |   `r par_solution[1,1]`   |`r model_ols$coefficients[1]`
+$\beta$    |   `r par_solution[2,1]`   |`r model_ols$coefficients[2]`
+$\sigma$   |   `r usigma`              |`r x`
+
+```{r}
+n_ft <-c(log(18200)-log(18000))
+n_tcs<-predict(model_ols,newdata = data.frame(NSEI.Adjusted=n_ft))
+New_value<-exp(n_tcs+log(3200))
+
+```
+
+
+4. If the current value of Nifty is 18000 and it goes up to 18200. The current value of TCS is Rs. 3200/-. How much you can expect TCS price to go up?
+
+
+Ans:) The predicted price of TCS is `r New_value`
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
