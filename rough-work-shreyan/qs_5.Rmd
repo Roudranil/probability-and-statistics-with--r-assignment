@@ -101,6 +101,7 @@ Parameter_List<-data.frame(Parameters=c('alpha','beta','sigma'),
 
 ```
 ```{r}
+#The data frame consisting of all the estimated parameters
 Parameter_List
 ```
 
