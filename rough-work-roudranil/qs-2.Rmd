@@ -71,7 +71,7 @@ estimated_mle %>%
          x = "Estimated MLE",
          y = "Count")
 
-perc_97.5 - perc_2.5
+diff_20 <- perc_97.5 - perc_2.5
 ```
 
 3.
@@ -103,7 +103,7 @@ estimated_mle %>%
          x = "Estimated MLE",
          y = "Count")
 
-perc_97.5 - perc_2.5
+diff_40 <- perc_97.5 - perc_2.5
 ```
 
 4. 
@@ -135,7 +135,13 @@ estimated_mle %>%
          x = "Estimated MLE",
          y = "Count")
 
-perc_97.5 - perc_2.5
+diff_100 <- perc_97.5 - perc_2.5
+```
+
+```{r}
+diff_20
+diff_40
+diff_100
 ```
 
 We can see that the gap between the percentile points is decreasing as the sample size increases.
