@@ -1,0 +1,149 @@
+---
+title: "Question 2"
+author: "Roudranil Das"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+1. 
+```{r}
+mle <- function(log_alpha, data, sigma) {
+    l = sum(log(dgamma(data, shape = exp(log_alpha), scale = sigma)))
+    # print(paste("l is ", l))
+    return(-l)
+}
+
+MyMLE <- function(data, sigma) {
+    log_alpha_initial <- log(mean(data)^2/var(data))
+    # print(paste("log alpha initial is ", log_alpha_initial))
+    estimator <- optim(log_alpha_initial,
+                 mle,
+                 data = data,
+                 sigma = sigma)
+    log_alpha_hat <- estimator$par
+    return(log_alpha_hat)
+}
+```
+
+
+```{r}
+get_estimates <- function(n, alpha, sigma) {
+    estimates <- c()
+    for (i in 1:1000) {
+        samples <- rgamma(n, shape = alpha, scale = sigma)
+        # print(paste("some of the samples are ", samples[1:5]))
+        estimates <- append(estimates, MyMLE(data = samples, sigma = sigma))
+    }
+    return(estimates)
+}
+```
+
+2. 
+```{r}
+n = 20
+alpha = 1.5
+sigma = 2.2
+
+estimated_mle <- tibble(get_estimates(n = n, alpha = alpha, sigma = sigma))
+colnames(estimated_mle) <- c("estimate")
+
+perc_2.5 <- quantile(estimated_mle$estimate, probs = 0.025, names = FALSE)
+perc_97.5 <- quantile(estimated_mle$estimate, probs = 0.975, names = FALSE)
+
+estimated_mle %>% 
+    ggplot(aes(estimate)) +
+    geom_histogram(color = "white", fill = "#5D5D5D") +
+    geom_vline(xintercept = log(alpha), 
+               size = 2,
+               linetype = "dashed") +
+    annotate("text", label = "Actual log(alpha)", x = 0.5, y = 95, color = "black") +
+    geom_vline(xintercept = perc_2.5, 
+               color = "#00B9FF", size = 1.5, linetype = "dashed") +
+    annotate("text", label = "2.5 percentile", x = perc_2.5 + 0.1, y = 95, color = "#00B9FF") +
+    geom_vline(xintercept = perc_97.5, 
+               color = "#E08304", size = 1.5, linetype = "dashed") +
+    annotate("text", label = "97.5 percentile", x = perc_97.5 + 0.1, y = 95, color = "#E08304") +
+    labs(title = paste("n = ", n, ", alpha = ", alpha, ", sigma = ", sigma),
+         x = "Estimated MLE",
+         y = "Count")
+
+diff_20 <- perc_97.5 - perc_2.5
+```
+
+3.
+```{r}
+n = 40
+alpha = 1.5
+sigma = 2.2
+
+estimated_mle <- tibble(get_estimates(n = n, alpha = alpha, sigma = sigma))
+colnames(estimated_mle) <- c("estimate")
+
+perc_2.5 <- quantile(estimated_mle$estimate, probs = 0.025, names = FALSE)
+perc_97.5 <- quantile(estimated_mle$estimate, probs = 0.975, names = FALSE)
+
+estimated_mle %>% 
+    ggplot(aes(estimate)) +
+    geom_histogram(color = "white", fill = "#5D5D5D") +
+    geom_vline(xintercept = log(alpha), 
+               size = 2,
+               linetype = "dashed") +
+    annotate("text", label = "Actual log(alpha)", x = log(alpha) + 0.1, y = 95, color = "black") +
+    geom_vline(xintercept = perc_2.5, 
+               color = "#00B9FF", size = 1.5, linetype = "dashed") +
+    annotate("text", label = "2.5 percentile", x = perc_2.5 + 0.1, y = 95, color = "#00B9FF") +
+    geom_vline(xintercept = perc_97.5, 
+               color = "#E08304", size = 1.5, linetype = "dashed") +
+    annotate("text", label = "97.5 percentile", x = perc_97.5 + 0.1, y = 95, color = "#E08304") +
+    labs(title = paste("n = ", n, ", alpha = ", alpha, ", sigma = ", sigma),
+         x = "Estimated MLE",
+         y = "Count")
+
+diff_40 <- perc_97.5 - perc_2.5
+```
+
+4. 
+```{r}
+n = 100
+alpha = 1.5
+sigma = 2.2
+
+estimated_mle <- tibble(get_estimates(n = n, alpha = alpha, sigma = sigma))
+colnames(estimated_mle) <- c("estimate")
+
+perc_2.5 <- quantile(estimated_mle$estimate, probs = 0.025, names = FALSE)
+perc_97.5 <- quantile(estimated_mle$estimate, probs = 0.975, names = FALSE)
+
+estimated_mle %>% 
+    ggplot(aes(estimate)) +
+    geom_histogram(color = "white", fill = "#5D5D5D") +
+    geom_vline(xintercept = log(alpha), 
+               size = 2,
+               linetype = "dashed") +
+    annotate("text", label = "Actual log(alpha)", x = log(alpha) + 0.05, y = 95, color = "black") +
+    geom_vline(xintercept = perc_2.5, 
+               color = "#00B9FF", size = 1.5, linetype = "dashed") +
+    annotate("text", label = "2.5 percentile", x = perc_2.5 + 0.05, y = 95, color = "#00B9FF") +
+    geom_vline(xintercept = perc_97.5, 
+               color = "#E08304", size = 1.5, linetype = "dashed") +
+    annotate("text", label = "97.5 percentile", x = perc_97.5 + 0.05, y = 95, color = "#E08304") +
+    labs(title = paste("n = ", n, ", alpha = ", alpha, ", sigma = ", sigma),
+         x = "Estimated MLE",
+         y = "Count")
+
+diff_100 <- perc_97.5 - perc_2.5
+```
+
+```{r}
+diff_20
+diff_40
+diff_100
+```
+
+We can see that the gap between the percentile points is decreasing as the sample size increases.
+
+
