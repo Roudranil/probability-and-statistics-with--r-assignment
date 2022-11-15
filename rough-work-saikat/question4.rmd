@@ -86,7 +86,7 @@ theta_hat
 (ii) Calculate **Bayesian Information Criterion** (BIC) for the model.   
 
 ```{r results = FALSE, warning=FALSE}
-BIC = 2*NegLogLikeA(theta_hat,Insurance) + log(nrow(Insurance))*2
+BIC = 2*NegLogLikeA(theta_hat,Insurance) + log(nrow(Insurance))*3
 ```
 
 
@@ -144,7 +144,7 @@ theta_hat
 (ii) Calculate **Bayesian Information Criterion** (BIC) for the model.   
 
 ```{r results = FALSE, warning=FALSE}
-BIC = 2*NegLogLikeB(theta_hat,Insurance) + log(nrow(Insurance))*2
+BIC = 2*NegLogLikeB(theta_hat,Insurance) + log(nrow(Insurance))*3
 ```
 
 
@@ -203,7 +203,7 @@ theta_hat
 (ii) Calculate **Bayesian Information Criterion** (BIC) for the model.    
 
 ```{r results = FALSE, warning=FALSE}
-BIC=2*NegLogLikeC(theta_hat,Insurance)+log(nrow(Insurance))*2
+BIC=2*NegLogLikeC(theta_hat,Insurance)+log(nrow(Insurance))*3
 ```
 
 
@@ -252,7 +252,7 @@ theta_hat
 ```
 
 ```{r results = FALSE, warning=FALSE}
-BIC=2*NegLogLikeD(theta_hat,Insurance)+log(nrow(Insurance))*2
+BIC=2*NegLogLikeD(theta_hat,Insurance)+log(nrow(Insurance))*3
 ```
 
 
