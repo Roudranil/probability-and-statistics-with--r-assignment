@@ -54,12 +54,12 @@ library(tidyverse)
 
 ```{r results = FALSE, warning=FALSE}
 NegLogLikeA = function(theta,data){
-  sigma = theta[3]
+  sigma = exp(theta[3])
   n = nrow(data)
   l=0
   for(i in 1:n){
     mu = theta[1]+theta[2]*data$Holders[i]
-    l = l + dnorm(data$Claims[i],mean = mu,sd=sigma)
+    l = l + log(dnorm(data$Claims[i],mean = mu, sd=sigma))
   }
   return(-l)
 }
@@ -115,7 +115,7 @@ NegLogLikeB = function(theta, data){
   l=0
   for(i in 1:n){
     mu = theta[1]+theta[2]*data$Holders[i]
-    l = l + dlaplace(data$Claims[i], 0, sigma)
+    l = l + log(dlaplace(data$Claims[i], 0, sigma))
     print(l)
   }
   return(-l)
@@ -132,8 +132,8 @@ fit = optim(theta_initial,
 
 
 ```{r}
-ggplot(data=Insurance)+
-  geom_line(aes(Holders, fit$par[1]+fit$par[2]*Holders))+
+ggplot(data=Insurance) +
+  geom_line(aes(Holders, fit$par[1]+fit$par[2]*Holders)) +
   geom_point(aes(Holders,Claims))
 theta_hat = fit$par
 theta_hat
@@ -171,9 +171,11 @@ NegLogLikeC = function(theta,data){
   n = nrow(data)
   l=0
   for(i in 1:n){
-    mu = theta[1]+theta[2]*log(data$Holders[i])
-    l = l + dlnorm(data$Claims[i],meanlog = mu, sdlog = sigma)
-    print(l)
+    if(data$Claims[i] >0){
+      mu = theta[1]+theta[2]*data$Holders[i]
+      l = l + log(dlnorm(data$Claims[i],meanlog = mu, sdlog = sigma))
+      print(l)
+    }
   }
   return(-l)
 }
@@ -184,10 +186,7 @@ NegLogLikeC(theta_initial, Insurance)
 
 fit = optim(theta_initial,
             NegLogLikeC,
-            data=Insurance,
-            lower = c(-Inf, -Inf, 0),
-            upper = c(Inf, Inf, Inf),
-            method = "L-BFGS-B")
+            data=Insurance)
 ```
 
 
@@ -227,7 +226,7 @@ NegLogLikeD = function(theta,data){
   l=0
   for(i in 1:n){
     shape = theta[1]+theta[2]*data$Holders[i]
-    l = l + dgamma(data$Claims[i], shape = shape, scale = scale)
+    l = l + log(dgamma(data$Claims[i], shape = shape, scale = scale))
     print(l)
   }
   return(-l)
