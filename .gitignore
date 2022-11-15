@@ -21,6 +21,5 @@
 *.Rproj
 
 official-documents
-rough-work
 
 !src/visualisation-project-code.html
