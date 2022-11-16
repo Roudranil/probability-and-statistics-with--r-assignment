@@ -21,6 +21,16 @@ Summary of Problem 1:
 - From given sample statistis we had to estimate parameters and abide by desired assumptions.
 - Comparison between Geometric and Poisson Distribution model was done.
 
+Summary of Problem 2:
+- We had to define a function to compute the maximum likelihood estimator of `log(alpha)` of a gamma distribution.
+- We simulated a sample from certain gamma distributions, computed the MLE 1000 times for each distribution and plotted histograms for each case.
+- We computed the difference between the 2.5 and 97.5 percentile points of each distribution and confirmed that the difference shrinks as sample size increases.
+
+Summary of Problem 3:
+- We estimated the parameters of the three models using MLE method.
+- We found out the AIC of all three models once we had the parameters and found that model 3 offered the best fit.
+- Using the third model, we calcualted the probability $\mathbb{P}[60<\texttt{waiting}<70] = 0.0908132$.
+
 Summary of Problem 5:  
 - We had to fit a linear model for the return of TCS with that of the return of NIFTY
 - We had to estimate the coefficients of the linear model using Method Of Moments
