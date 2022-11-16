@@ -75,7 +75,7 @@ sigma = theta_1[5]
 
 model_1 = p*dgamma(x, shape = a, scale = s) + (1-p)*dnorm(x, mean = mu, sd = sigma)
 
-aic_1 <- 2*5 + neg_log_likelihood(theta_1, x)
+aic_1 <- 2*5 + 2*neg_log_likelihood(theta_1, x)
 
 # hist(x, xlab = 'waiting', probability = T, col='pink', main='')
 # lines(x, model_1)
@@ -133,7 +133,7 @@ s_2 <- theta_2[5]
 
 model_2 <- p*dgamma(x, shape = a_1, scale = s_1) + (1-p)*dgamma(x, shape = a_2, scale = s_2)
 
-aic_2 <- 2*5 + neg_log_likelihood(theta_2, x)
+aic_2 <- 2*5 + 2*neg_log_likelihood(theta_2, x)
 
 # hist(x, xlab = 'waiting', probability = T, col='pink', main='')
 # lines(x, model_2)
@@ -192,7 +192,7 @@ sigma_2 <- theta_3[5]
 
 model_3 <- p*dlnorm(x, meanlog = mu_1, sdlog = sigma_1) + (1-p)*dlnorm(x, meanlog = mu_2, sdlog = sigma_2)
 
-aic_3 <- 2*5 + neg_log_likelihood(theta_3, x)
+aic_3 <- 2*5 + 2*neg_log_likelihood(theta_3, x)
 
 # hist(x, xlab = 'waiting', probability = T, col='pink', main='')
 # lines(x, model_3)
