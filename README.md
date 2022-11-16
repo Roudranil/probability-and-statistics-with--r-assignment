@@ -31,6 +31,16 @@ Summary of Problem 3:
 - We found out the AIC of all three models once we had the parameters and found that model 3 offered the best fit.
 - Using the third model, we calcualted the probability $\mathbb{P}[60<\texttt{waiting}<70] = 0.0908132$.
 
+Summary of Problem 4:
+- We worked with the `Insurance` datasets in the `MASS` package. 
+- We predicted the `Claims` as function of `Holders` by follwing models -
+  $\texttt{Claims}_i=\beta_0 + \beta_1~\texttt{Holders}_i + \varepsilon_i,~~~i=1,2,\cdots,n
+ * $\texttt{Claims}_i\sim N(\mu_i,\sigma^2),~~where \mu_i =\beta_0 + \beta_1~\texttt{Holders}_i + \varepsilon_i,~~~i=1,2,\cdots,n
+ * $\varepsilon_i\sim Laplace(0,\sigma^2)
+ * $\texttt{Claims}_i\sim LogNormal(\mu_i,\sigma^2), where \mu_i=\beta_0 + \beta_1 \log(\texttt{Holders}_i), ~~i=1,2,...,n
+ * $\texttt{Claims}_i\sim Gamma(\alpha_i,\sigma), where log(\alpha_i)=\beta_0 + \beta_1 \log(\texttt{Holders}_i), ~~i=1,2,...,n
+- We found that `Laplace Distribution` is the best fit.
+
 Summary of Problem 5:  
 - We had to fit a linear model for the return of TCS with that of the return of NIFTY
 - We had to estimate the coefficients of the linear model using Method Of Moments
