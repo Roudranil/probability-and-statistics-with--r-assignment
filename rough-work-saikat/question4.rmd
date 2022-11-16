@@ -262,5 +262,5 @@ BIC
 
 (iii) Compare the BIC of all three models
 
-Comparing BIC of all the models, we see that BIC of model 1 is least.    
+Comparing BIC of all the models, we see that BIC of model 2 is least.    
 So, we conclude that model 2(Laplace Distribution) is the best fit.
