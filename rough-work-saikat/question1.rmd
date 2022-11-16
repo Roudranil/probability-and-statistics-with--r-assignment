@@ -1,0 +1,144 @@
+---
+title: "Question 1"
+author: "Saikat Bera and Shreyan Chakraborty"
+date: "`r Sys.Date()`"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+
+Suppose $X$ denote the number of goals scored by home team in premier league. We can assume $X$ is a random variable. Then we have to build the probability distribution to model the probability of number of goals. Since $X$ takes value in $\mathbb{N}=\{0,1,2,\cdots\}$, we can consider the geometric progression sequence as possible candidate model, i.e.,
+$$
+S=\{a,ar,ar^2,ar^{3},\cdots\}.
+$$
+But we have to be careful and put proper conditions in place and modify $S$ in such a way so that it becomes proper probability distributions. 
+
+
+### Part 1:    
+Figure out the necesary conditions and define the probability distribution model using $S$.       
+
+We are given a random variable $X$ with a supposed prob. distribution
+$\{a, ar, ar^2, ...\}$. Hence, we can write: $$\mathbb{P}(X=i) = ar^i$$
+
+Now, because $\sum_{i} \mathbb{P}(X=i) = 1$ for a probability
+distribution, we must have \begin{align*} \sum_{i} \mathbb{P}(X=i) &= 1
+\\ \implies \sum_{i} ar^i &= 1 \\ \implies \frac{a}{1-r} &= 1 \\
+\implies a &= 1-r \end{align*}
+
+We have ***assumed*** that $|r| < 1$, but because probabilities are
+non-negative, it's sufficient to have: $0 \le r < 1$.
+
+Hence, we finally have $$\mathbb{P}(X=i) = (1-r)r^i, ~~~ 0\le r < 1$$
+
+### Parts 2 and 3:   
+2. Check if mean and variance exists for the probability model.  
+3. Can you find the analytically expression of mean and variance.   
+
+Once again, we ***assume*** $|r| < 1$, but because probabilities are
+non-negative, it's sufficient to have: $0 \le r < 1$.
+
+We now have: \begin{align*} \mathbb{E}(X) &= \sum_{i} i\mathbb{P}(X=i)
+\\ &= \sum_{i} i(1-r)r^i \\ \implies \frac{\mathbb{E}(X)}{1-r} &=
+\sum_{i} ir^i \\ \implies \frac{\mathbb{E}(X)}{1-r} &= \frac{r}{(1-r)^2}
+\\ \implies \mathbb{E}(X) &= \frac{r}{1-r} \end{align*}
+
+Observe that \begin{align*} \mathbb{E}(X^2) &= \sum_{i} i^2
+\mathbb{P}(X=i) \\ &= \sum_{i} i^2(1-r)r^i \end{align*}
+
+Calculating the sum, we obtain: $$\mathbb{E}(X^2) =
+\frac{r(r+1)}{(1-r)^2}$$
+
+To calculate the variance, now: \begin{align*} \text{Var}(X) &=
+\mathbb{E}(X^2) - [\mathbb{E}(X)]^2 \\ &= \frac{r(r+1)}{(1-r)^2} -
+\frac{r^2}{(1-r)^2} \\ &= \frac{r}{(1-r)^2} \end{align*}
+
+### Part 4:   
+From historical data we found the following summary statistics
+\begin{table}[ht]
+\centering
+     \begin{tabular}{c|c|c|c}\hline
+     mean &  median & variance & total number of matches\\ \hline
+     1.5 & 1 & 2.25 & 380\\ \hline
+     \end{tabular}
+\end{table}
+Using the summary statistics and your newly defined probability distribution model find the following:
+ a. What is the probability that home team will score at least one goal?
+ b. What is the probability that home team will score at least one goal but less than four goal?    
+
+We are given that the mean is 1.5 and the variance is 2.25. This amounts
+to solving the following set of equations:
+\begin{align} \frac{r}{1-r} &= 1.5 \\ \frac{r}{(1-r)^2} &= 2.25
+\end{align}
+
+But, one can easily verify that this system of equations is
+inconsistent. So, we cannot solve for the value of $r$ using this
+method. To resolve this issue, we are going to find the ***maximum
+likelihood estimate*** of $r$.
+
+Denote by $\mathbf{x}$ the observed values in a random sample $x_1, x_2,
+\cdots, x_n$. The likelihood function for the geometric distribution can
+be expressed as: $$L(r|\mathbf{x}) = \prod_{i=1}^{n} (1-r)r^{x_i} =
+(1-r)^n\,r^{\sum_{i=1}^{n} x_i}$$
+
+Taking the natural logarithm of the likelihood function gives:
+$$ \ln L(r|\mathbf{x}) = \ln \big[(1-r)^n\,r^{\sum_{i=1}^{n} x_i}\big] =
+n \ln(1-r) + \ln(r) \sum x_i \tag{a}$$
+
+Let's take the first-order partial derivative of $\ln L(r|\mathbf{x})$
+with respect to $r$ and set the answer equal to zero:
+$$\frac{\partial \ln L(r|\mathbf{x})}{\partial r} = -\frac{n}{1-r} +
+\frac{\sum x_i}{r} \stackrel{set}{=} 0$$
+
+The solution is given by $\hat{r} = \frac{\sum x_i}{\sum x_i + n}$. It's
+easy to check that the second-order partial derivative of the
+log-likelihood function is negative at $r = \hat{r}$.
+
+For our problem, let's find this value from the summary of data we're
+given:
+$$\hat{r} = \frac{380 * 1.5}{380 * 1.5 + 380} = \frac{3}{5}$$
+
+Consequently,
+
+a.  $\mathbb{P}(X \geq 1) = 1 - \mathbb{P}(X = 0) = 1 - (1 - r) = 0.6$;
+b.  $\mathbb{P}(1 \leq X < 4) = \mathbb{P}(X = 1) + \mathbb{P}(X = 2) +
+\mathbb{P}(X = 3) = (1-r)\big[r + r^2 + r^3] = 0.4704$
+
+### Part 5: 
+Suppose on another thought you want to model it with off-the shelf Poisson probability models. Under the assumption that underlying distribution is Poisson probability find the above probabilities, i.e.,
+ a. What is the probability that home team will score at least one goal?
+ b. What is the probability that home team will score at least one goal but less than four goal?    
+
+For a Poisson distribution, the mean and variance is equal to $\lambda$.
+Furthermore, we know that the ***maximum likelihood estimate*** for
+$\lambda$ is the sample mean. So, we will take $\lambda = 1.5$.
+
+a.  $\mathbb{P}(X \geq 1) = 1 - \mathbb{P}(X = 0) = 1 - e^{-\lambda} =
+0.78$;
+b.  $\mathbb{P}(1 \leq X < 4) = \mathbb{P}(X = 1) + \mathbb{P}(X = 2) +
+\mathbb{P}(X = 3) = e^{-\lambda} \big[\lambda + \frac{\lambda^2}{2} +
+\frac{\lambda^3}{6}\big] = 0.71$
+
+### Part 6: 
+Which probability model you would prefer over another?     
+
+When we first see the observed statistics such as mean and variance, we see that sample variance is more than that of sample mean.
+
+Generally speaking,geometric distribution has its variance more than that of mean.
+
+But we see that,on further inspection the sample mean and sample variance is inconsistent.Therefore the given geometric distribution is not that of great fit.
+
+Looking at the observed probabilities for both (a) and (b) in Parts 4
+and 5, we are inclined towards the Poisson model as likely to better fit
+the data.
+
+### Part 7:   
+Write down the likelihood functions of your newly defined probability models and Poisson models. Clearly mention all the assumptions that you are making.     
+
+For the Poisson distribution: $$L(\lambda|\mathbf{x}) = \prod_{i=1}^{n}
+\frac{e^{-\lambda}\lambda^{x_i}}{x_i!} = e^{-n\lambda}
+\prod_{i=1}^{n}\frac{\lambda^{x_i}}{x_i!}$$
+
+For the geometric distribution: $$L(r|\mathbf{x}) = \prod_{i=1}^{n}
+(1-r)r^{x_i} = (1-r)^n\,r^{\sum_{i=1}^{n} x_i}$$
