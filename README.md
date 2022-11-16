@@ -1,6 +1,8 @@
 # Probability and Statistics with R assignment
 
-This is our group assignment for the first semester in Probability and Statistics with R at Chennai Mathematical Institute (C.M.I),Chennai.
+This is our group assignment for the first semester in Probability and Statistics with R at Chennai Mathematical Institute (CMI), Chennai.
+
+## Collaborator information
 
 The assignment was completed by the following students:  
 - Roudranil Das [Roll: `MDS202227`]
@@ -10,6 +12,8 @@ The assignment was completed by the following students:
 The complete code of the solutions to the problems is available [here](https://github.com/Roudranil/probability-and-statistics-with-r-assignment/blob/main/code/assignment-2-code.Rmd). The corresponding pdf is available [here](https://github.com/Roudranil/probability-and-statistics-with-r-assignment/blob/main/report/assignment-2-code.pdf).
 
 The folders [rough-work-roudranil](https://github.com/Roudranil/probability-and-statistics-with-r-assignment/tree/main/rough-work-roudranil), [rough-work-saikat](https://github.com/Roudranil/probability-and-statistics-with-r-assignment/tree/main/rough-work-saikat), [rough-work-shreyan](https://github.com/Roudranil/probability-and-statistics-with-r-assignment/tree/main/rough-work-shreyan) contains all the individual work done by the 3 collaborators.
+
+## Problem summary
 
 - Problem 1 was solved by Saikat Bera and Shreyan Chakraborty
 - Problem 2 and 3 were solved by Roudranil Das
@@ -33,12 +37,12 @@ Summary of Problem 3:
 
 Summary of Problem 4:
 - We worked with the `Insurance` datasets in the `MASS` package. 
-- We predicted the `Claims` as function of `Holders` by follwing models -
-  $\texttt{Claims}_i=\beta_0 + \beta_1~\texttt{Holders}_i + \varepsilon_i,~~~i=1,2,\cdots,n
- * $\texttt{Claims}_i\sim N(\mu_i,\sigma^2),~~where \mu_i =\beta_0 + \beta_1~\texttt{Holders}_i + \varepsilon_i,~~~i=1,2,\cdots,n
- * $\varepsilon_i\sim Laplace(0,\sigma^2)
- * $\texttt{Claims}_i\sim LogNormal(\mu_i,\sigma^2), where \mu_i=\beta_0 + \beta_1 \log(\texttt{Holders}_i), ~~i=1,2,...,n
- * $\texttt{Claims}_i\sim Gamma(\alpha_i,\sigma), where log(\alpha_i)=\beta_0 + \beta_1 \log(\texttt{Holders}_i), ~~i=1,2,...,n
+- We predicted the `Claims` as function of `Holders` by follwing models -   
+   * $\texttt{Claims}_i=\beta_0 + \beta_1\texttt{Holders}_i + \varepsilon_i, i=1,2,\cdots,n$
+      - $\texttt{Claims}_i\sim N(\mu_i,\sigma^2), \text{ where } \mu_i =\beta_0 + \beta_1~\texttt{Holders}_i + \varepsilon_i, i=1,2,\cdots,n$
+      - $\varepsilon_i\sim Laplace(0,\sigma^2)$
+   * $\texttt{Claims}_i\sim LogNormal(\mu_i,\sigma^2),\text{ where } \mu_i=\beta_0 + \beta_1 \log(\texttt{Holders}_i), i=1,2,...,n$
+   * $\texttt{Claims}_i\sim Gamma(\alpha_i,\sigma),\text{ where } log(\alpha_i)=\beta_0 + \beta_1 \log(\texttt{Holders}_i), i=1,2,...,n$
 - We found that `Laplace Distribution` is the best fit.
 
 Summary of Problem 5:  
