@@ -115,7 +115,7 @@ NegLogLikeB = function(theta, data){
   l=0
   for(i in 1:n){
     mu = theta[1]+theta[2]*data$Holders[i]
-    l = l + log(dlaplace(data$Claims[i], 0, sigma))
+    l = l + log(dlaplace(data$Claims[i], mu, sigma))
     print(l)
   }
   return(-l)
@@ -263,4 +263,4 @@ BIC
 (iii) Compare the BIC of all three models
 
 Comparing BIC of all the models, we see that BIC of model 1 is least.    
-So, we conclude that model 1 is the best fit.
+So, we conclude that model 2(Laplace Distribution) is the best fit.
